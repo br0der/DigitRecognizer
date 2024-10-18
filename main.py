@@ -7,9 +7,7 @@ mndata = MNIST('samples')
 
 images, labels = mndata.load_training()
 
-print(images[0])
-
-net = Network(28*28, 2, 32, 10)
-net.setSigmoid()
+net = Network(28*28, 1, 16, 10)
+# net.setSigmoid()
 
 net.train(images, labels)
