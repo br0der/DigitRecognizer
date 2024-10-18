@@ -1,4 +1,15 @@
 import random
+import math
+
+class Variable:
+    def __init__(self, index, value):
+        self.index = index
+        self.value = value
+
+var = Variable(1, True)
+print(var.index)
+print(var.value)
+
 
 
 class Network:
@@ -38,6 +49,15 @@ class Network:
     def setActivation(self, f):
         self.activation = f
 
+    def setSigmoid(self):
+        def sigmoid(val):
+            if val < -100: return 0
+            if val > 100: return 1
+            print(val)
+            return 1.0/(1+math.pow(math.e, -val))
+        
+        self.setActivation(sigmoid)
+
     def activate(self, val):
         return self.activation(val)
     
@@ -46,6 +66,12 @@ class Network:
 
     def getBias(self, layer, node):
         return self.biases[layer][node]
+
+    def scaleOutput(self, output):
+        assert(len(output)==10)
+        l = [math.pow(math.e, item) for item in output]
+        s = sum(l)
+        return [item/s for item in l]
 
     def forwardPropogate(self, picture):
         assert(len(picture) == self.inputDim)
@@ -56,8 +82,12 @@ class Network:
         for i in range(self.inputDim):
             for j in range(self.nodesPerLayer):
                 currLayer[j]+=picture[i]*self.getWeight(0, i, j)
-            currLayer[j]+=self.getBias(0, j)
+        for j in range(self.nodesPerLayer):
+            currLayer[j] += self.getBias(0, j)
             currLayer[j] = self.activate(currLayer[j])
+            print(currLayer[j])
+
+        print()
 
         # For all layers, propogate it through
         for layerIdx in range(1, self.layers):
@@ -65,8 +95,12 @@ class Network:
             for i in range(self.nodesPerLayer):
                 for j in range(self.nodesPerLayer):
                     nextLayer[j]+=currLayer[i]*self.getWeight(layerIdx, i, j)
+            for j in range(self.nodesPerLayer):
                 nextLayer[j]+=self.getBias(layerIdx, j)
                 nextLayer[j] = self.activate(nextLayer[j])
+                print(nextLayer[j])
+
+            print()
 
             currLayer = nextLayer
         
@@ -76,7 +110,19 @@ class Network:
         for i in range(self.nodesPerLayer):
             for j in range(self.outputDim):
                 output[j]+=currLayer[i]*self.getWeight(self.layers, i, j)
+        for j in range(self.outputDim):
             output[j]+=self.getBias(self.layers, j)
             output[j] = self.activate(output[j])
+            print(output[j])
 
-        return output
+        print()
+        print(output)
+        return self.scaleOutput(output)
+
+    def train(self, images, labels):
+        training = list(zip(images, labels))
+        random.shuffle(training)
+        ideal = [0.0 if i!=training[0][1] else 1.0 for i in range(10)]
+        output = self.forwardPropogate(training[0][0])
+        error = sum([(output[i]-ideal[i])**2 for i in range(10)])
+        print(output, error)

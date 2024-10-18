@@ -1,11 +1,15 @@
+import math
 from network import Network
-# from image import PIL
-from mnist import download_and_parse_mnist_file
 
-mndata = download_and_parse_mnist_file('samples')
+from mnist import MNIST
+
+mndata = MNIST('samples')
 
 images, labels = mndata.load_training()
-print(images)
-net = Network(90*140, 2, 5, 10)
 
-print(net.getWeight(0, 0, 0))
+print(images[0])
+
+net = Network(28*28, 2, 32, 10)
+net.setSigmoid()
+
+net.train(images, labels)
