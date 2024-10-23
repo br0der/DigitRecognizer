@@ -20,13 +20,18 @@ testImages = [[1, 0.5, 0, 1]]
 testLablels = [1]
 
 
-print(testNet.getError(testImages[0], testLablels[0]))
+print(sum(testNet.getError(testImages[0], testLablels[0])))
+# print(testNet.weights)
+# print(testNet.biases)
+# print(testNet.forwardPropogate(testImages[0]))
+# print(testNet.activationValues)
+for i in range(1000):
+    testNet.train(testImages, testLablels)
 print(testNet.weights)
-print(testNet.biases)
-
-print()
-
-testNet.train(testImages, testLablels)
-print(testNet.getError(testImages[0], testLablels[0]))
-print(testNet.weights)
-print(testNet.biases)
+print(testNet.forwardPropogate(testImages[0]))
+print(sum(testNet.getError(testImages[0], testLablels[0])))
+# print(testNet.forwardPropogate(testImages[0]))
+# print(testNet.activationValues)
+# print(testNet.getError(testImages[0], testLablels[0]))
+# print(testNet.weights)
+# print(testNet.biases)
